@@ -6,7 +6,7 @@ public class Alcohol : MonoBehaviour
 {
     private void FixedUpdate()
     {
-        transform.Translate(7 * Time.deltaTime, 0, 0);
+        transform.Translate(10 * Time.deltaTime, 0, 0);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

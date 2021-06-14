@@ -23,7 +23,8 @@ public class Virus : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+
+    private void FixedUpdate()
     {
         if (goingRight)
         {
@@ -43,10 +44,12 @@ public class Virus : MonoBehaviour
             if (goingRight)
             {
                 goingRight = false;
+                transform.localScale = new Vector2(0.07646312f, transform.localScale.y);
             }
             else
             {
                 goingRight = true;
+                transform.localScale = new Vector2(-0.07646312f, transform.localScale.y);
             }
         }
     }

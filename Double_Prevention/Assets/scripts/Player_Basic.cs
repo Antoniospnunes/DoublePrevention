@@ -19,6 +19,7 @@ public class Player_Basic : MonoBehaviour
     [SerializeField] protected GameObject boy;
     [SerializeField] protected GameObject girl;
     [SerializeField] protected GameObject alcohol;
+    [SerializeField] private GameObject mainCamera;
 
     private static int lives = 3;
 
@@ -26,12 +27,13 @@ public class Player_Basic : MonoBehaviour
 
     private void Awake()
     {
+        mainCamera = GameObject.Find("Main Camera");
         _rb = GetComponent<Rigidbody2D>();
         _boxCollider = GetComponent<BoxCollider2D>();
     }
     void Start()
     {
-        if(gameObject.name == "Boy")
+        if (gameObject.name == "Boy")
         {
             isBoy = true;
         }
@@ -39,6 +41,7 @@ public class Player_Basic : MonoBehaviour
         {
             isBoy = false;
         }
+        mainCamera.transform.SetParent(gameObject.transform);
     }
 
     // Update is called once per frame
@@ -52,6 +55,7 @@ public class Player_Basic : MonoBehaviour
         {
             ThrowAlcohol();
         }
+
     }
 
     private void FixedUpdate()
@@ -72,6 +76,20 @@ public class Player_Basic : MonoBehaviour
                 TakeDamage(1);
             }
         }
+        if (collision.transform.CompareTag("Sick"))
+        {
+            if (!isBoy)
+            {
+                if (collision.gameObject.transform.position.x > transform.position.x)
+                {
+                    TakeDamage(-1);
+                }
+                else
+                {
+                    TakeDamage(1);
+                }
+            }
+        }
     }
 
     private void Movement()
@@ -81,13 +99,13 @@ public class Player_Basic : MonoBehaviour
 
         transform.Translate(direction * _moveSpeed * Time.deltaTime);
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             transform.localScale = new Vector3(0.08f, 0.08f, 1);
             //_playerAnimations.SetBool("Walking", true);
 
         }
-        else if (Input.GetKey(KeyCode.LeftArrow))
+        else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             transform.localScale = new Vector3(-0.08f, 0.08f, 1);
             //_playerAnimations.SetBool("Walking", true);
@@ -142,6 +160,7 @@ public class Player_Basic : MonoBehaviour
                 girl.GetComponent<BoxCollider2D>().enabled = true;
                 girl.GetComponent<Rigidbody2D>().gravityScale = 10;
                 girl.GetComponent<Rigidbody2D>().velocity = _rb.velocity;
+                mainCamera.transform.SetParent(girl.transform);
                 gameObject.SetActive(false);
             }
             else
@@ -152,6 +171,7 @@ public class Player_Basic : MonoBehaviour
                 boy.GetComponent<BoxCollider2D>().enabled = true;
                 boy.GetComponent<Rigidbody2D>().gravityScale = 10;
                 boy.GetComponent<Rigidbody2D>().velocity = _rb.velocity;
+                mainCamera.transform.SetParent(boy.transform);
                 gameObject.SetActive(false);
             }
         }
@@ -159,10 +179,11 @@ public class Player_Basic : MonoBehaviour
 
     protected void TakeDamage(int hitDirection)
     {
-        KnockBack(2, hitDirection, 3);
+        KnockBack(hitDirection, 10 , 15);
         lives--;
         if(lives <= 0)
         {
+            mainCamera.transform.SetParent(null);
             Destroy(gameObject);
         }
     }
@@ -170,7 +191,7 @@ public class Player_Basic : MonoBehaviour
     public void KnockBack(float hitDirection, float horizontalForce, float verticalForce)
     {
         _rb.velocity = Vector2.zero;
-        _rb.gravityScale = 2.5f;
+        //_rb.gravityScale = 10f;
         _rb.AddForce(new Vector2(horizontalForce * hitDirection, verticalForce), ForceMode2D.Impulse);
     }
 
